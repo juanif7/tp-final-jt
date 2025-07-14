@@ -20,6 +20,39 @@ struct entero {
     size_t n;
 };
 
+static entero_t *_parte_alta(const entero_t *num, size_t m) {
+    if (num == NULL || m >= num->n) return NULL;
+    size_t nueva_longitud = num->n - m;
+    entero_t *resultado = _crear(nueva_longitud);
+    if (resultado == NULL) return NULL;
+    for (size_t i = 0; i < nueva_longitud; i++) {
+        resultado->d[i] = num->d[i + m];
+    }
+    return resultado;
+}
+
+static entero_t *_parte_baja(const entero_t *num, size_t m) {
+    if (num == NULL || m > num->n) return NULL;
+    entero_t *resultado = _crear(m);
+    if (resultado == NULL) return NULL;
+    for (size_t i = 0; i < m; i++) {
+        resultado->d[i] = num->d[i];
+    }
+    return resultado;
+}
+
+static entero_t *_desplazar_digitos(const entero_t *num, size_t m) {
+    if (num == NULL) return NULL;
+    size_t nueva_longitud = num->n + m;
+    entero_t *resultado = _crear(nueva_longitud);
+    if (resultado == NULL) return NULL;
+    
+    for (size_t i = 0; i < num->n; i++) {
+        resultado->d[i + m] = num->d[i];
+    }
+    return resultado;
+}
+
 static size_t _cantidad_bits(const entero_t *e) {
     if (e == NULL || e->n == 0) return 0;
 
@@ -441,3 +474,133 @@ char *leer_bcd(size_t *n) {
     return bcd;
 }
 
+entero_t *multiplicar_enteros_largos(const entero_t *x, const entero_t *y) {
+    if (x == NULL || y == NULL || x->d == NULL || y->d == NULL) return NULL;
+    //si uno es cero te devuele un entero de un solo dígito: 0
+    if ((x->n == 1 && x->d[0] == 0) || (y->n == 1 && y->d[0] == 0)) {
+        return _crear(1); 
+    }
+    //ambos son de un solo dígito
+    if (x->n == 1 && y->n == 1) {
+        uint64_t producto = (uint64_t)x->d[0] * (uint64_t)y->d[0];
+        entero_t *resultado = _crear(2);
+        if (resultado == NULL) return NULL;
+        
+        resultado->d[0] = producto & MASK_32;
+        resultado->d[1] = producto >> 32;
+        //elimino ceros no significativos
+        if (resultado->d[1] == 0) {
+            _redimensionar(resultado, 1);
+        }
+        return resultado;
+    }
+    
+    // Asegurar que ambos números tengan la misma longitud 
+    size_t max_longitud = (x->n > y->n) ? x->n : y->n;
+    if (max_longitud % 2 != 0) max_longitud++;//necesito que sea par porque lo voy a dividir muchas veces
+    
+    //se crean copias y se redimensionan agragando ceros para que los nros tengan la misma longitud
+    entero_t *x_rellenado = entero_clonar(x);
+    entero_t *y_rellenado = entero_clonar(y);
+    if (x_rellenado == NULL || y_rellenado == NULL) {
+        if (x_rellenado) entero_destruir(x_rellenado);
+        if (y_rellenado) entero_destruir(y_rellenado);
+        return NULL;
+    }
+    if (!_redimensionar(x_rellenado, max_longitud) || !_redimensionar(y_rellenado, max_longitud)) {
+        entero_destruir(x_rellenado);
+        entero_destruir(y_rellenado);
+        return NULL;
+    } 
+    // divido los nros, obteniendo las partes "bajas"(m) y "altas"(n-m)
+    size_t m = max_longitud / 2;
+ 
+    entero_t *x1 = _parte_alta(x_rellenado, m);
+    entero_t *x0 = _parte_baja(x_rellenado, m);
+    entero_t *y1 = _parte_alta(y_rellenado, m);
+    entero_t *y0 = _parte_baja(y_rellenado, m);
+    
+    if (x1 == NULL || x0 == NULL || y1 == NULL || y0 == NULL) {
+        if (x1) entero_destruir(x1);
+        if (x0) entero_destruir(x0);
+        if (y1) entero_destruir(y1);
+        if (y0) entero_destruir(y0);
+        entero_destruir(x_rellenado);
+        entero_destruir(y_rellenado);
+        return NULL;
+    }
+   
+    entero_t *z2 = multiplicar_enteros_largos(x1, y1);  // x1*y1
+    entero_t *z0 = multiplicar_enteros_largos(x0, y0);  // x0*y0
+    
+    //(x1 + x0) y (y1 + y0)
+    entero_t *sum_x = entero_clonar(x1);
+    entero_t *sum_y = entero_clonar(y1);
+    if (sum_x == NULL || sum_y == NULL || 
+        !entero_sumar(sum_x, x0) || !entero_sumar(sum_y, y0)) {
+        if (sum_x) entero_destruir(sum_x);
+        if (sum_y) entero_destruir(sum_y);
+        entero_destruir(z2);
+        entero_destruir(z0);
+        entero_destruir(x_rellenado);
+        entero_destruir(y_rellenado);
+        entero_destruir(x1);
+        entero_destruir(x0);
+        entero_destruir(y1);
+        entero_destruir(y0);
+        return NULL;
+    }
+    
+    // Calcular z3 = (x1 + x0)*(y1 + y0)
+    entero_t *z3 = entero_multiplicar_karatsuba(sum_x, sum_y);
+    
+    // Calcular z1 = z3 - z2 - z0
+    entero_t *z1 = entero_clonar(z3);
+    if (z1 == NULL || !entero_restar(z1, z2) || !entero_restar(z1, z0)) {
+        entero_destruir(z1); 
+        entero_destruir(z3);
+        entero_destruir(z2);
+        entero_destruir(z0);
+        entero_destruir(sum_x);
+        entero_destruir(sum_y);
+        entero_destruir(x_rellenado);
+        entero_destruir(y_rellenado);
+        entero_destruir(x1);
+        entero_destruir(x0);
+        entero_destruir(y1);
+        entero_destruir(y0);
+        return NULL;
+
+    }  
+    // z2*B^(2m) + z1*B^m + z0
+    
+    entero_t *resultado = _desplazar_digitos(z2, 2*m);    // z2 * B^(2m)
+    // z1 * B^m
+    entero_t *term2 = _desplazar_digitos(z1, m);
+    if (resultado == NULL || term2 == NULL) {
+        if (resultado) entero_destruir(resultado);
+        if (term2) entero_destruir(term2);
+        return NULL;
+    }
+    // term1 + term2
+    if (!entero_sumar(teresultadorm1, term2)) {
+        entero_destruir(resultado);
+        entero_destruir(term2);
+        return NULL;
+    } 
+    // (term1 + term2) + z0
+    if (!entero_sumar(resultado, z0)) {
+        entero_destruir(resultado);
+        return NULL;
+    }
+
+    entero_destruir(x_rellenado);
+    entero_destruir(y_rellenado);
+    entero_destruir(x1); entero_destruir(x0);
+    entero_destruir(y1); entero_destruir(y0);
+    entero_destruir(z2); entero_destruir(z0);
+    entero_destruir(z3); entero_destruir(z1);
+    entero_destruir(sum_x); entero_destruir(sum_y);
+    
+    return resultado;
+}

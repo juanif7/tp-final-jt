@@ -49,4 +49,6 @@ bool entero_imprimir(const entero_t *entero);
 // Lee un número en formato BCD desde la entrada estándar
 char *leer_bcd(size_t *n);
 
+entero_t *multiplicar_enteros_largos(const entero_t *x, const entero_t *y);
+
 #endif
