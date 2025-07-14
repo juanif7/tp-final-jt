@@ -49,4 +49,4 @@ bool entero_imprimir(const entero_t *entero);
 // Lee un número en formato BCD desde la entrada estándar
 char *leer_bcd(size_t *n);
 
-#endif // ENTERO_H
+#endif
