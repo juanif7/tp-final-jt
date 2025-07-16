@@ -1,6 +1,6 @@
 #include "cola.h"
 #include <stdlib.h>
-
+//aguente caram musso chupala
 typedef struct nodo {
     void *dato;
     struct nodo *sig;
