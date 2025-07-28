@@ -2,9 +2,8 @@
 
 typedef struct{
     char *nombre;   //"+", "-", etc
-    int aridad;     // 1, 2 o 3
-    int prioridad;  //1, 2 o 3
-    int parametros; //cantidad de operandos que recibe
+    int aridad;     // cantidad de operandos
+    int prioridad;  //1, 2 o 3 
     racional_t *(*funcion)(const racional_t *, const racional_t *); //operacion asociada
     const char *descripcion; //que hace la funcion
 }operacion_t;
@@ -18,12 +17,12 @@ typedef struct{
 }
 
 satatic const operacion_t OPERACIONES[]{
-    {"+", 2, 1, 2, racional_sumar, "a + b"},
-    {"-", 2, 1, 2, racional_restar, "a - b"},
-    {"*", 2, 2, 2, racional_multiplicar, "a * b"},
-    {"/", 2, 3, 2, racional_dividir, "a / b"},
-    {"^", 2, 4, 2, racional_potencia, "a ^ b"},
-    {"_", 1, 5, 1, racional_invertir, "-a"},
+    {"+", 2, 1, racional_sumar, "a + b"},
+    {"-", 2, 1, racional_restar, "a - b"},
+    {"*", 2, 2, racional_multiplicar, "a * b"},
+    {"/", 2, 3, racional_dividir, "a / b"},
+    {"^", 2, 4, racional_potencia, "a ^ b"},
+    {"_", 1, 5, racional_invertir, "-a"},
 };
 
 static const funcion_t FUNCIONES[]{

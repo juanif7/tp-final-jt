@@ -55,7 +55,7 @@ static entero_t *minimo_comun_multiplo(const entero_t *a, const entero_t *b){ //
     return resultado;
 }
 //nueva
-static void simplificar_racional(racional_t *r) {
+void simplificar_racional(racional_t *r) {
     if(r == NULL) return;
     entero_t *cero = entero_cero();
     if(cero == NULL) return;
@@ -93,7 +93,6 @@ static void simplificar_racional(racional_t *r) {
     entero_destruir(uno);
 }
 
-//nueva
 racional_t *racional_crear(bool es_negativo, entero_t *numerador, entero_t *denominador){
     racional_t *r = malloc(sizeof(racional_t));
     if(r == NULL) return NULL;
@@ -113,8 +112,6 @@ racional_t *racional_crear(bool es_negativo, entero_t *numerador, entero_t *deno
     simplificar_racional(r);
     return r;
 }
-
-
 
 void racional_destruir(racional_t *q){
     if(q->n)entero_destruir(q->n);//destruye q y n si estos existen.
@@ -143,7 +140,6 @@ bool racional_imprimir(const racional_t *q) {
     return true;
 }
  
-//nueva
 racional_t *racional_sumar(const racional_t *q, const racional_t *r){ //podria achicar lineas en el caso de que los signos sean iguales
     entero_t *mcm = minimo_comun_multiplo(q->d, r->d);
     entero_t *factorq = entero_clonar(mcm);
@@ -193,7 +189,6 @@ racional_t *racional_sumar(const racional_t *q, const racional_t *r){ //podria a
     return resultado;
 }
 
-//nueva
 racional_t *racional_restar(const racional_t *q, const racional_t *r){
     //q + r = q + (-r) gracias roby!
     racional_t *r_aux = racional_crear(!(r->s), entero_clonar(r->n), entero_clonar(r->d));
@@ -202,7 +197,6 @@ racional_t *racional_restar(const racional_t *q, const racional_t *r){
     return resta;
 }
 
-//nueva
 racional_t *racional_multiplicar(const racional_t *q, const racional_t *r){
     //chequeo q nungún denominador sea cero.
     entero_t *cero = entero_cero();
@@ -242,7 +236,6 @@ racional_t *racional_multiplicar(const racional_t *q, const racional_t *r){
 
 }
 
-//nueva
 racional_t *racional_dividir(const racional_t *q, const racional_t *r) {
     if (q == NULL || r == NULL) return NULL;
     entero_t *cero = entero_cero();

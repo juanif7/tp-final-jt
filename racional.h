@@ -7,6 +7,7 @@
 
 typedef struct racional racional_t;
 
+void simplificar_racional(racional_t *r);
 racional_t *racional_crear(bool es_negativo, entero_t *numerador, entero_t *denominador);
 void racional_destruir(racional_t *q);
 const entero_t *racional_numerador(const racional_t *q);
