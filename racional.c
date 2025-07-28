@@ -1,4 +1,3 @@
-//racional.c
 #include "racional.h"
 #include "entero.h"
 
@@ -255,4 +254,59 @@ racional_t *racional_dividir(const racional_t *q, const racional_t *r) {
     racional_destruir(r_aux);
     
     return division;
+}
+
+racional_t *racional_modulo(racional_t r){
+    racional_t resultado = racional_crear(false, r->n, r->s);
+    return resultado;
+}
+
+racional_t *racional_factorial(const racional_t *r) {
+    if (r == NULL) {
+        entero_t *cero = crear_entero_desde_numero(0);
+        entero_t *uno = crear_entero_desde_numero(1);
+        racional_t *error = racional_crear(false, cero, uno);
+        entero_destruir(cero);
+        entero_destruir(uno);
+        return error;
+    }
+    
+    //no hay factorial negativo
+    if (racional_es_negativo(r)) {
+        // Factorial no definido para números negativos
+        entero_t *cero = crear_entero_desde_numero(0);
+        entero_t *uno = crear_entero_desde_numero(1);
+        racional_t *error = racional_crear(false, cero, uno);
+        entero_destruir(cero);
+        entero_destruir(uno);
+        return error;
+    }
+    
+    //solo se puede hacer factorial de enteros (numerador/1)
+    const entero_t *denominador = racional_denominador(r);
+    entero_t *uno = crear_entero_desde_numero(1);
+    
+    if (entero_comparar(denominador, uno) != 0) {
+        // No es un entero (denominador ≠ 1), factorial no definido
+        entero_t *cero = crear_entero_desde_numero(0);
+        racional_t *error = racional_crear(false, cero, uno);
+        entero_destruir(cero);
+        entero_destruir(uno);
+        return error;
+    }
+    
+    // Obtener el numerador y calcular su factorial
+    const entero_t *numerador = racional_numerador(r);
+    entero_t *factorial_resultado = entero_factorial(numerador);
+    
+    // Crear el racional resultado: factorial_resultado/1
+    entero_t *denominador_resultado = entero_clonar(uno);
+    racional_t *resultado = racional_crear(false, factorial_resultado, denominador_resultado);
+    
+    // Limpiar memoria temporal
+    entero_destruir(factorial_resultado);
+    entero_destruir(denominador_resultado);
+    entero_destruir(uno);
+    
+    return resultado;
 }

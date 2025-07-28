@@ -18,5 +18,7 @@ racional_t *racional_sumar(const racional_t *q, const racional_t *r);
 racional_t *racional_restar(const racional_t *q, const racional_t *r);
 racional_t *racional_multiplicar(const racional_t *q, const racional_t *r);
 racional_t *racional_dividir(const racional_t *q, const racional_t *r);
+racional_t *racional_modulo(racional_t r);
+racional_t *racional_factorial(const racional_t *r);
 
 #endif

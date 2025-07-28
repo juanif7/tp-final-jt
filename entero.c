@@ -20,6 +20,13 @@ struct entero {
     size_t n;
 };
 
+entero_t *crear_entero_desde_numero(int numero) {
+    char buffer[32];
+    sprintf(buffer, "%d", numero);
+    size_t len = strlen(buffer);
+    return entero_desde_bcd(buffer, len);
+}
+
 static entero_t *_parte_alta(const entero_t *num, size_t m) {
     if (num == NULL || m >= num->n) return NULL;
     size_t nueva_longitud = num->n - m;
@@ -603,4 +610,53 @@ entero_t *multiplicar_enteros_largos(const entero_t *x, const entero_t *y) {
     entero_destruir(sum_x); entero_destruir(sum_y);
     
     return resultado;
+}
+
+entero_t *entero_factorial(const entero_t *n) {
+    // Verificar que n no sea NULL
+    if (n == NULL) {
+        return crear_entero_desde_numero(0); // Error
+    }
+    
+    // veo que n sea no negativo
+    entero_t *cero = crear_entero_desde_numero(0);
+    entero_t *uno = crear_entero_desde_numero(1);
+    
+    // Caso base: 0! = 1
+    if (entero_comparar(n, cero) == 0) {
+        entero_destruir(cero);
+        entero_destruir(uno);
+        return crear_entero_desde_numero(1);
+    }
+    
+    // Caso base: 1! = 1
+    if (entero_comparar(n, uno) == 0) {
+        entero_destruir(cero);
+        entero_destruir(uno);
+        return crear_entero_desde_numero(1);
+    }
+    
+    // factorial = 1
+    entero_t *factorial = entero_clonar(uno);
+    
+    // Inicializar contador = 2 (ya que factorial = 1)
+    entero_t *contador = crear_entero_desde_numero(2);
+    
+    // Calcular factorial: factorial = 1 * 2 * 3 * ... * n
+    while (entero_comparar(contador, n) <= 0) {
+        // factorial = factorial * contador
+        entero_t *temp = multiplicar_enteros_largos(factorial, contador);
+        entero_destruir(factorial);
+        factorial = temp;
+        
+        // contador = contador + 1
+        entero_sumar(contador, uno);
+    }
+    
+    // Limpiar memoria temporal
+    entero_destruir(cero);
+    entero_destruir(uno);
+    entero_destruir(contador);
+    
+    return factorial;
 }
