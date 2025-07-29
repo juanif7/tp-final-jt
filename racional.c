@@ -263,8 +263,8 @@ racional_t *racional_modulo(racional_t *r){
 
 racional_t *racional_factorial(const racional_t *r) {
     if (r == NULL) {
-        entero_t *cero = crear_entero_desde_numero(0);
-        entero_t *uno = crear_entero_desde_numero(1);
+        entero_t *cero = crear_entero_desde_int(0);
+        entero_t *uno = crear_entero_desde_int(1);
         racional_t *error = racional_crear(false, cero, uno);
         entero_destruir(cero);
         entero_destruir(uno);
@@ -274,8 +274,8 @@ racional_t *racional_factorial(const racional_t *r) {
     //no hay factorial negativo
     if (racional_es_negativo(r)) {
         // Factorial no definido para números negativos
-        entero_t *cero = crear_entero_desde_numero(0);
-        entero_t *uno = crear_entero_desde_numero(1);
+        entero_t *cero = crear_entero_desde_int(0);
+        entero_t *uno = crear_entero_desde_int(1);
         racional_t *error = racional_crear(false, cero, uno);
         entero_destruir(cero);
         entero_destruir(uno);
@@ -284,11 +284,11 @@ racional_t *racional_factorial(const racional_t *r) {
     
     //solo se puede hacer factorial de enteros (numerador/1)
     const entero_t *denominador = racional_denominador(r);
-    entero_t *uno = crear_entero_desde_numero(1);
+    entero_t *uno = crear_entero_desde_int(1);
     
     if (entero_comparar(denominador, uno) != 0) {
         // No es un entero (denominador ≠ 1), factorial no definido
-        entero_t *cero = crear_entero_desde_numero(0);
+        entero_t *cero = crear_entero_desde_int(0);
         racional_t *error = racional_crear(false, cero, uno);
         entero_destruir(cero);
         entero_destruir(uno);
