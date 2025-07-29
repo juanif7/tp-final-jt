@@ -322,3 +322,7 @@ racional_t *racional_inverso(const racional_t *r){
 
     return inverso;
 }
+
+void racional_invertir(const racional_t *r){
+    r->s = !(r->s);
+}

@@ -27,7 +27,7 @@ satatic const operacion_t OPERACIONES[]{
 
 static const funcion_t FUNCIONES[]{
     {"fact", ??, 1, racional_factorial, "a!"},
-    {"abs", ??, 1, racional_absoluto, "|a|"},
+    {"abs", ??, 1, racional_modulo, "|a|"},
     {"inv", ??, 1, racional_inverso, "a^-1"},
     {"pi", ??, 0, ??, "3.1416"},
     {"e", ??, 0, ??, "2.7182"},
