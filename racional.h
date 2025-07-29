@@ -50,4 +50,7 @@ racional_t *racional_factorial(const racional_t *r);
 //devuelve el inverso multiplicativo del racional
 racional_t *racional_inverso(const racional_t *r);
 
+//invierte el signo del racional
+void racional_invertir(const racional_t *r);
+
 #endif
