@@ -256,7 +256,7 @@ racional_t *racional_dividir(const racional_t *q, const racional_t *r) {
     return division;
 }
 
-racional_t *racional_modulo(racional_t r){
+racional_t *racional_modulo(racional_t *r){
     racional_t resultado = racional_crear(false, r->n, r->s);
     return resultado;
 }
@@ -309,4 +309,16 @@ racional_t *racional_factorial(const racional_t *r) {
     entero_destruir(uno);
     
     return resultado;
+}
+
+racional_t *racional_inverso(const racional_t *r){
+    racional_t *numerador = racional_numerador(r);
+    racioanl_t *denominador = racional_denominador(r);
+
+    racional_t *inverso = racional_crear(r->s, denominador, numerador);
+
+    racional_destruir(numerador);
+    racional_destruir(denominador);
+
+    return inverso;
 }
