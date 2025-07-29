@@ -54,4 +54,6 @@ entero_t *multiplicar_enteros_largos(const entero_t *x, const entero_t *y);
 entero_t *entero_factorial(const entero_t *n);
 
 entero_t *crear_entero_desde_int(int numero);
+
+entero_t *entero_potencia(const entero_t *a, const entero_t *b);
 #endif

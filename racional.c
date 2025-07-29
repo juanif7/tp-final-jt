@@ -53,7 +53,7 @@ static entero_t *minimo_comun_multiplo(const entero_t *a, const entero_t *b){ //
     entero_destruir(producto);
     return resultado;
 }
-//nueva
+
 void simplificar_racional(racional_t *r) {
     if(r == NULL) return;
     entero_t *cero = entero_cero();
@@ -325,4 +325,96 @@ racional_t *racional_inverso(const racional_t *r){
 
 void racional_invertir(const racional_t *r){
     r->s = !(r->s);
+}
+
+racional *racional_potencia(const racional *base, const racional *exponente) {
+    // Verificar que el exponente tenga denominador 1
+    entero_t *uno = entero_crear_desde_int(1);
+    if (entero_comparar(exponente->d, uno) != 0) {
+        // El exponente no es un entero, retornar NULL o manejar error
+        entero_destruir(uno);
+        return NULL;
+    }
+    entero_destruir(uno);
+    
+    // Crear enteros auxiliares
+    entero_t *cero = entero_crear_desde_int(0);
+    
+    // Verificar si el exponente es 0
+    if (entero_comparar(exponente->n, cero) == 0) {
+        // Cualquier número (excepto 0) elevado a 0 es 1
+        entero_destruir(cero);
+        entero_t *uno_num = entero_crear_desde_int(1);
+        entero_t *uno_den = entero_crear_desde_int(1);
+        racional *resultado = malloc(sizeof(racional));
+        resultado->s = false;  // positivo
+        resultado->n = uno_num;
+        resultado->d = uno_den;
+        return resultado;
+    }
+    
+    // Verificar si el exponente es negativo
+    bool exponente_negativo = false;
+    entero_t *exp_abs = NULL;
+    
+    if (entero_comparar(exponente->n, cero) < 0) {
+        exponente_negativo = true;
+        // Calcular valor absoluto del exponente
+        exp_abs = entero_clonar(exponente->n);
+        // Cambiar signo (multiplicar por -1)
+        entero_t *menos_uno = entero_crear_desde_int(-1);
+        entero_t *temp = entero_multiplicar_enteros_largos(exp_abs, menos_uno);
+        entero_destruir(exp_abs);
+        entero_destruir(menos_uno);
+        exp_abs = temp;
+    } else {
+        exp_abs = entero_clonar(exponente->n);
+    }
+    
+    // Calcular numerador^|exponente| y denominador^|exponente|
+    entero_t *num_potencia = entero_potencia(base->n, exp_abs);
+    entero_t *den_potencia = entero_potencia(base->d, exp_abs);
+    
+    // Crear el resultado
+    racional *resultado = malloc(sizeof(racional));
+    
+    if (exponente_negativo) {
+        // Si el exponente era negativo, invertir la fracción
+        resultado->n = den_potencia;
+        resultado->d = num_potencia;
+    } else {
+        resultado->n = num_potencia;
+        resultado->d = den_potencia;
+    }
+    
+    // Determinar el signo del resultado
+    // Si la base es negativa y el exponente es impar, el resultado es negativo
+    if (base->s) {  // base negativa
+        entero_t *dos = entero_crear_desde_int(2);
+        entero_t *resto_division = NULL;
+        entero_t *cociente = entero_dividir(exp_abs, dos, &resto_division);
+        
+        entero_t *uno_temp = entero_crear_desde_int(1);
+        if (entero_comparar(resto_division, uno_temp) == 0) {
+            // Exponente es impar, resultado negativo
+            resultado->s = true;
+        } else {
+            // Exponente es par, resultado positivo
+            resultado->s = false;
+        }
+        
+        entero_destruir(dos);
+        entero_destruir(cociente);
+        entero_destruir(resto_division);
+        entero_destruir(uno_temp);
+    } else {
+        // Base positiva, resultado siempre positivo
+        resultado->s = false;
+    }
+    
+    // Liberar memoria auxiliar
+    entero_destruir(cero);
+    entero_destruir(exp_abs);
+    
+    return resultado;
 }
