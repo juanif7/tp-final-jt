@@ -660,3 +660,56 @@ entero_t *entero_factorial(const entero_t *n) {
     
     return factorial;
 }
+
+entero_t *entero_potencia(const entero_t *a, const entero_t *b) {
+    //enteros auxiliares para los cálculos
+    entero_t *resultado = entero_crear_desde_int(1);  // resultado = 1
+    entero_t *base = entero_clonar(a);                // base = a
+    entero_t *exponente = entero_clonar(b);           // exponente = b
+    entero_t *cero = entero_crear_desde_int(0);       // cero = 0
+    entero_t *uno = entero_crear_desde_int(1);        // uno = 1
+    entero_t *dos = entero_crear_desde_int(2);        // dos = 2
+    
+    if (entero_comparar(exponente, cero) == 0) {
+        // Cualquier número elevado a 0 es 1 (base)
+        entero_destruir(base);
+        entero_destruir(exponente);
+        entero_destruir(cero);
+        entero_destruir(uno);
+        entero_destruir(dos);
+        return resultado;  // ya es 1
+    }
+    
+    //exponenciación rápida-> base x 1, base ^ 2, exp/2, asi hasta q exp sea 0 
+    while (entero_comparar(exponente, cero) > 0) {
+        // Si el exponente es impar
+        entero_t *resto_division = NULL;
+        entero_t *cociente = entero_dividir(exponente, dos, &resto_division);
+        
+        if (entero_comparar(resto_division, uno) == 0) {
+            // exponente es impar: resultado = resultado * base
+            entero_t *temp_resultado = entero_multiplicar_enteros_largos(resultado, base);
+            entero_destruir(resultado);
+            resultado = temp_resultado;
+        }
+        
+        // base = base * base
+        entero_t *temp_base = entero_multiplicar_enteros_largos(base, base);
+        entero_destruir(base);
+        base = temp_base;
+        
+        // exponente = exponente / 2
+        entero_destruir(exponente);
+        exponente = cociente;
+        entero_destruir(resto_division);
+    }
+    
+    // Liberar memoria de variables auxiliares
+    entero_destruir(base);
+    entero_destruir(exponente);
+    entero_destruir(cero);
+    entero_destruir(uno);
+    entero_destruir(dos);
+    
+    return resultado;
+}
